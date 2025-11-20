@@ -1,18 +1,22 @@
-# 1. Gunakan base image Tomcat
+# --- TAHAP 1: BUILD (Memasak kode Java jadi .war) ---
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
+
+# Copy semua file project ke dalam Docker
+COPY . .
+
+# Perintah maven untuk compile dan package (bikin folder target otomatis)
+RUN mvn clean package -DskipTests
+
+# --- TAHAP 2: RUN (Menjalankan Tomcat) ---
 FROM tomcat:9.0-jdk17
 
-# 2. Hapus aplikasi bawaan Tomcat biar bersih
+# Bersihkan aplikasi bawaan
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# 3. COPY file website kamu
-# PENTING: Ganti "." dengan "WebContent/" agar yang di-copy hanya isi foldernya,
-# bukan seluruh folder project (termasuk src/git dll).
-COPY WebContent/ /usr/local/tomcat/webapps/ROOT/
+# Copy hasil build dari Tahap 1 ke folder Tomcat
+# Kita ambil file .war yang dihasilkan Maven lalu taruh sebagai ROOT
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
-# 4. Expose port 8080 (Ini default Tomcat)
-# Jangan ubah ke 8089 kecuali kamu ubah server.xml juga.
-# Biarkan 8080 agar Railway mudah mendeteksi.
 EXPOSE 8080
-
-# 5. Start Tomcat (Gunakan script Linux!)
 CMD ["catalina.sh", "run"]
