@@ -1,16 +1,18 @@
-# Use an official Tomcat runtime as a parent image
+# 1. Gunakan base image Tomcat
 FROM tomcat:9.0-jdk17
 
-# Remove the default Tomcat applications to keep it clean
+# 2. Hapus aplikasi bawaan Tomcat biar bersih
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy your project files to the Tomcat webapps folder.
-# IMPORTANT: Changing context to ROOT means your app loads at the main URL.
-# If your JSP files are in a specific folder (like 'WebContent' or 'src'), change the "." below.
-COPY . /usr/local/tomcat/webapps/ROOT
+# 3. COPY file website kamu
+# PENTING: Ganti "." dengan "WebContent/" agar yang di-copy hanya isi foldernya,
+# bukan seluruh folder project (termasuk src/git dll).
+COPY WebContent/ /usr/local/tomcat/webapps/ROOT/
 
-# Expose port 8080 (Tomcat default)
+# 4. Expose port 8080 (Ini default Tomcat)
+# Jangan ubah ke 8089 kecuali kamu ubah server.xml juga.
+# Biarkan 8080 agar Railway mudah mendeteksi.
 EXPOSE 8080
 
-# Start Tomcat
-CMD ["startup.sh", "run"]
+# 5. Start Tomcat (Gunakan script Linux!)
+CMD ["catalina.sh", "run"]
