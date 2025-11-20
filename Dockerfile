@@ -10,7 +10,7 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 COPY . /usr/local/tomcat/webapps/ROOT
 
 # Expose port 8080 (Tomcat default)
-EXPOSE 8089
+EXPOSE 8080
 
 # Start Tomcat
-CMD ["startup.bat", "run"]
+CMD ["startup.sh", "run"]
